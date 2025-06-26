@@ -6,8 +6,6 @@ import uvicorn
 
 # --- CONFIGURACIÓN ---
 
-# Tu API key de OpenAI
-OPENAI_API_KEY = "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"
 # URL de Power Automate
 POWER_AUTOMATE_URL = "https://prod-40.westus.logic.azure.com:443/workflows/bf72ea2d7282488da107a2115535502b/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=2aVJlesHOqqwyeVv7jPfGyTAUYx2U34dvXMh4dXKZUM"
 
