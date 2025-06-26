@@ -3,6 +3,7 @@ import requests
 from fastapi import FastAPI, Request
 from fastapi.responses import PlainTextResponse
 import uvicorn
+import os
 
 # --- CONFIGURACIÓN ---
 
@@ -10,7 +11,7 @@ import uvicorn
 POWER_AUTOMATE_URL = "https://prod-40.westus.logic.azure.com:443/workflows/bf72ea2d7282488da107a2115535502b/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=2aVJlesHOqqwyeVv7jPfGyTAUYx2U34dvXMh4dXKZUM"
 
 # Cliente OpenAI
-client = OpenAI(api_key=OPENAI_API_KEY)
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 # Estructura del modelo semántico
 estructura_modelo = """
