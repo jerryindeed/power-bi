@@ -33,17 +33,43 @@ Feriados: Fecha Feriado
 
 def pregunta_a_dax(pregunta):
     prompt = f"""
-    Eres un asistente experto en análisis de datos y lenguaje DAX, que ayuda a generar consultas precisas y ejecutables para Power BI.
+        Eres un asistente experto en análisis de datos y lenguaje DAX, que ayuda a generar consultas precisas y ejecutables para Power BI.
 
-    Dispones de un modelo de datos con las siguientes tablas y columnas:
+        Dispones de un modelo de datos con las siguientes tablas y columnas:
 
-    {estructura_modelo}
+        {estructura_modelo}
 
-    Consulta del usuario:
-    \"{pregunta}\"
+        Tu tarea es interpretar cualquier pregunta hecha en lenguaje natural por un usuario y generar una consulta DAX correcta, optimizada y ejecutable. Siempre usa los nombres exactos de tablas y columnas proporcionados.
 
-    Devuelve únicamente la consulta DAX completa y válida, sin comentarios ni explicación.
-    """
+        📌 Consideraciones clave para generar la consulta DAX:
+        - Usa funciones como `SUM`, `MAX`, `COUNTROWS`, `CALCULATE`, `FILTER`, `SUMMARIZECOLUMNS`, etc., según la intención de la pregunta.
+        - Si necesitas filtrar por fechas relativas (como "mes pasado", "últimos 7 días"), usa funciones como `EDATE`, `TODAY()`, `DATEADD`, y asegúrate de aplicar el filtro correctamente dentro de `CALCULATE`, sin usar `VAR` si no estás generando una medida.
+        - Si el usuario se refiere a:
+        - "médicos" → usa la tabla `'Maestra_Medicos'`
+        - "nombre del médico" → usa la columna `'Nombre Medico'`
+        - "ventas", "frascos", "precio", etc. → revisa la tabla `'Data Ventas'`
+        - "productos" → usa `'Maestra_Productos'`
+        - "detalle del producto" → usa `'Maestra_Productos'[detalle]`
+        - "precio costo" → usa `'Data Ventas'[PrecioCosto]`
+        - "fecha de creación" → usa la columna `'fechaCreacion'` de la tabla correspondiente
+
+        ✅ Cuando uses `SELECTCOLUMNS(...)` seguido de `FILTER(...)`, recuerda que:
+        - Solo puedes referenciar las columnas *renombradas* directamente por su alias (por ejemplo: `[detalle]`, no `'Maestra_Productos'[detalle]`).
+        - Alternativamente, usa `CALCULATETABLE(...)` para aplicar el filtro antes de seleccionar columnas.
+
+        ✅ Cuando el usuario solicite un **único valor agregado** (por ejemplo, el total del mes anterior o la suma general):
+        - Utiliza `EVALUATE ROW(...)` o `EVALUATE { ... }` para devolver solo una fila con una etiqueta descriptiva.
+        - Evita `SUMMARIZECOLUMNS` en estos casos para no devolver múltiples filas.
+        - Asegúrate de que la consulta sea ejecutable directamente.
+
+        🛑 No uses `VAR` ni `RETURN`, ya que la consulta debe ser directamente ejecutable como una sentencia `EVALUATE`.
+
+        Consulta del usuario:
+        \"{pregunta}\"
+
+        Devuelve únicamente la consulta DAX completa y válida, sin comentarios ni explicación.
+        """
+
 
     response = client.chat.completions.create(
         model="gpt-4.1",
