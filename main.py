@@ -102,25 +102,51 @@ def enviar_mensaje_telegram(chat_id, mensaje):
     requests.post(url, json=payload)
 
 def formatear_respuesta(resultado):
-    if not resultado or resultado.strip() == "":
+    if resultado is None:
         return "⚠️ No se encontraron resultados para tu consulta."
 
-    if "error" in resultado.lower() or "exception" in resultado.lower():
-        return "❌ Hubo un problema al procesar la consulta. Por favor, revisa tu pregunta."
-
-    # Si es un único valor en formato tipo { "Total Ventas": 10000 }
-    if resultado.strip().startswith("{") and resultado.strip().endswith("}"):
-        try:
-            data = eval(resultado)  # usar json.loads() si Power Automate devuelve JSON real
+    # Si es una lista y está vacía
+    if isinstance(resultado, list):
+        if len(resultado) == 0:
+            return "⚠️ No se encontraron resultados para tu consulta."
+        else:
+            # Si es una lista con contenido, lo convertimos a string
             mensajes = []
-            for clave, valor in data.items():
-                mensajes.append(f"🔹 {clave}: {valor}")
+            for item in resultado:
+                mensajes.append(str(item))
             return "\n".join(mensajes)
-        except Exception:
-            pass  # Si no es un diccionario, dejamos pasar al mensaje normal
 
-    # Si todo sale bien, devuelve el resultado sin modificar
-    return f"📈 Resultado obtenido:\n{resultado}"
+    # Si es un diccionario
+    if isinstance(resultado, dict):
+        mensajes = []
+        for clave, valor in resultado.items():
+            mensajes.append(f"🔹 {clave}: {valor}")
+        return "\n".join(mensajes)
+
+    # Si es un string vacío
+    if isinstance(resultado, str):
+        if resultado.strip() == "":
+            return "⚠️ No se encontraron resultados para tu consulta."
+
+        if "error" in resultado.lower() or "exception" in resultado.lower():
+            return "❌ Hubo un problema al procesar la consulta. Por favor, revisa tu pregunta."
+
+        # Si parece un diccionario en string
+        if resultado.strip().startswith("{") and resultado.strip().endswith("}"):
+            try:
+                data = eval(resultado)
+                mensajes = []
+                for clave, valor in data.items():
+                    mensajes.append(f"🔹 {clave}: {valor}")
+                return "\n".join(mensajes)
+            except Exception:
+                pass
+
+        return f"📈 Resultado obtenido:\n{resultado}"
+
+    # Si no es nada de eso, convertirlo a string y devolverlo
+    return str(resultado)
+
 
 
 # --- FASTAPI APP ---
