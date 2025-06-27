@@ -109,17 +109,28 @@ def formatear_respuesta(resultado):
     if isinstance(resultado, list):
         if len(resultado) == 0:
             return "⚠️ No se encontraron resultados para tu consulta."
-        else:
-            mensajes = [str(item) for item in resultado]
-            return "\n".join(mensajes)
+
+        # Si es una lista con un único diccionario con una única clave, devuelve solo su valor
+        if len(resultado) == 1 and isinstance(resultado[0], dict) and len(resultado[0]) == 1:
+            return list(resultado[0].values())[0]
+
+        # Si es una lista de diccionarios o valores, listarlos todos
+        mensajes = []
+        for item in resultado:
+            if isinstance(item, dict):
+                if len(item) == 1:
+                    mensajes.append(f"{list(item.values())[0]}")
+                else:
+                    for clave, valor in item.items():
+                        mensajes.append(f"🔹 {clave}: {valor}")
+            else:
+                mensajes.append(str(item))
+        return "\n".join(mensajes)
 
     # Si es diccionario
     if isinstance(resultado, dict):
-        # Si tiene solo una clave, devuelve su valor directamente
         if len(resultado) == 1:
             return list(resultado.values())[0]
-
-        # Si tiene varias claves, arma el listado
         mensajes = [f"🔹 {clave}: {valor}" for clave, valor in resultado.items()]
         return "\n".join(mensajes)
 
@@ -131,7 +142,6 @@ def formatear_respuesta(resultado):
         if "error" in resultado.lower() or "exception" in resultado.lower():
             return "❌ Hubo un problema al procesar la consulta. Por favor, revisa tu pregunta."
 
-        # Si parece un diccionario en string
         if resultado.strip().startswith("{") and resultado.strip().endswith("}"):
             try:
                 data = eval(resultado)
@@ -145,10 +155,7 @@ def formatear_respuesta(resultado):
 
         return f"📈 Resultado obtenido:\n{resultado}"
 
-    # Si no es ninguno de los anteriores, lo convierte a string
     return str(resultado)
-
-
 
 
 # --- FASTAPI APP ---
