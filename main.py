@@ -96,10 +96,25 @@ def pregunta_a_dax(pregunta):
 
         Tu tarea es interpretar cualquier pregunta hecha en lenguaje natural por un usuario y generar una consulta DAX correcta, optimizada y ejecutable. Siempre usa los nombres exactos de tablas y columnas proporcionados.
 
-        📌 Consideraciones clave para generar la consulta DAX:
+        📌 📌 Consideraciones clave para generar la consulta DAX:
         - Usa funciones como `SUM`, `MAX`, `COUNTROWS`, `CALCULATE`, `FILTER`, `SUMMARIZECOLUMNS`, etc., según la intención de la pregunta.
-        - Si necesitas filtrar por fechas relativas (como "mes pasado", "últimos 7 días"), usa funciones como `EDATE`, `TODAY()`, `DATEADD`, y asegúrate de aplicar correctamente los filtros dentro de `CALCULATE`.
-        - Si el usuario se refiere a conceptos relacionados a ventas, precios, cantidades, stock, clientes, vendedores, etc., utiliza las tablas y columnas adecuadas que coincidan exactamente por nombre en la estructura proporcionada.
+        - Si necesitas filtrar por fechas relativas (como "mes pasado", "últimos 7 días"), **usa siempre columnas de tipo `Date` (como `'Calendario'[FECHA]` o `'Calendario'[ORDEN_FECHA]`) para funciones como `EDATE`, `TODAY()`, `DATEADD`**.  
+        **Nunca compares columnas tipo texto o número (como `'Calendario'[AÑO_MES_NUM]`) directamente con resultados de esas funciones.**  
+        Si debes usar `AÑO_MES_NUM`, calcula el valor numérico correspondiente al periodo deseado con una operación aritmética, como `MAX('Calendario'[AÑO_MES_NUM]) - 1`.
+
+        Ejemplo incorrecto:
+
+        FILTER(ALL('Calendario'),'Calendario'[AÑO_MES_NUM] = EDATE(MAX('Calendario'[AÑO_MES_NUM]),-1))
+
+        Ejemplo correcto:
+
+        FILTER(ALL('Calendario'), 'Calendario'[FECHA] >= EDATE(TODAY(),-1) && 'Calendario'[FECHA] <= TODAY())
+
+        o bien:
+
+        VAR MesAnterior = MAX('Calendario'[AÑO_MES_NUM]) - 1
+        FILTER(ALL('Calendario'), 'Calendario'[AÑO_MES_NUM] = MesAnterior)
+
 
         - Si el usuario se refiere a:
         - "vendedor" → usa las tablas `'Vend_PromotorB2B', 'Vend_Terreno','Vend_Tlmk'`
