@@ -1,22 +1,18 @@
-from openai import OpenAI
+import os
 import requests
 from fastapi import FastAPI, Request
-from fastapi.responses import PlainTextResponse
-import uvicorn
+from fastapi.responses import JSONResponse
+from openai import OpenAI
 
 # --- CONFIGURACIÓN ---
 
-# Tu API key de OpenAI
-import os
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+TELEGRAM_API_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}"
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+POWER_AUTOMATE_URL = os.getenv("POWER_AUTOMATE_URL")
 
-# URL de Power Automate
-POWER_AUTOMATE_URL = "https://prod-40.westus.logic.azure.com:443/workflows/bf72ea2d7282488da107a2115535502b/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=2aVJlesHOqqwyeVv7jPfGyTAUYx2U34dvXMh4dXKZUM"
-
-# Cliente OpenAI
 client = OpenAI(api_key=OPENAI_API_KEY)
 
-# Estructura del modelo semántico
 estructura_modelo = """
 Tablas y columnas disponibles en el modelo semántico:
 
@@ -37,16 +33,16 @@ Feriados: Fecha Feriado
 
 def pregunta_a_dax(pregunta):
     prompt = f"""
-        Eres un asistente experto en análisis de datos y lenguaje DAX, que ayuda a generar consultas precisas y ejecutables para Power BI.
+    Eres un asistente experto en análisis de datos y lenguaje DAX, que ayuda a generar consultas precisas y ejecutables para Power BI.
 
-        Dispones de un modelo de datos con las siguientes tablas y columnas:
+    Dispones de un modelo de datos con las siguientes tablas y columnas:
 
-        {estructura_modelo}
+    {estructura_modelo}
 
-        Consulta del usuario:
-        \"{pregunta}\"
+    Consulta del usuario:
+    \"{pregunta}\"
 
-        Devuelve únicamente la consulta DAX completa y válida, sin comentarios ni explicación.
+    Devuelve únicamente la consulta DAX completa y válida, sin comentarios ni explicación.
     """
 
     response = client.chat.completions.create(
@@ -55,6 +51,7 @@ def pregunta_a_dax(pregunta):
     )
 
     return response.choices[0].message.content.strip()
+
 
 def enviar_a_power_automate(dax_query):
     body = {"query": dax_query}
@@ -72,26 +69,30 @@ def enviar_a_power_automate(dax_query):
     else:
         return f"❌ Error en Power Automate: {response.status_code}"
 
-# --- API FASTAPI ---
+
+def enviar_mensaje_telegram(chat_id, mensaje):
+    url = f"{TELEGRAM_API_URL}/sendMessage"
+    payload = {"chat_id": chat_id, "text": mensaje}
+    requests.post(url, json=payload)
+
+# --- FASTAPI APP ---
 
 app = FastAPI()
 
-@app.post("/whatsapp-webhook")
-async def whatsapp_webhook(request: Request):
-    data = await request.form()
-    mensaje = data.get("Body")  # este es el nombre del campo de Twilio para el mensaje recibido
+@app.post("/telegram-webhook")
+async def telegram_webhook(request: Request):
+    data = await request.json()
+    message = data.get("message", {})
+    chat_id = message.get("chat", {}).get("id")
+    texto = message.get("text", "")
 
-    if not mensaje:
-        return PlainTextResponse("No se recibió mensaje", status_code=400)
+    if not chat_id or not texto:
+        return JSONResponse(content={"ok": True})
 
-    # Procesamos la consulta
-    dax = pregunta_a_dax(mensaje)
+    dax = pregunta_a_dax(texto)
     resultado = enviar_a_power_automate(dax)
 
-    # Devolvemos la respuesta que Twilio reenvía al usuario por WhatsApp
-    respuesta = f"📊 Consulta:\n{mensaje}\n\n✅ Resultado:\n{resultado}"
-    return PlainTextResponse(respuesta)
+    respuesta = f"📊 Consulta:\n{texto}\n\n✅ Resultado:\n{resultado}"
+    enviar_mensaje_telegram(chat_id, respuesta)
 
-# --- INICIO LOCAL ---
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    return JSONResponse(content={"ok": True})
