@@ -101,6 +101,16 @@ def pregunta_a_dax(pregunta):
         - Si necesitas filtrar por fechas relativas (como "mes pasado", "últimos 7 días"), usa funciones como `EDATE`, `TODAY()`, `DATEADD`, y asegúrate de aplicar correctamente los filtros dentro de `CALCULATE`.
         - Si el usuario se refiere a conceptos relacionados a ventas, precios, cantidades, stock, clientes, vendedores, etc., utiliza las tablas y columnas adecuadas que coincidan exactamente por nombre en la estructura proporcionada.
 
+        - Si el usuario se refiere a:
+        - "vendedor" → usa las tablas `'Vend_PromotorB2B', 'Vend_Terreno','Vend_Tlmk'`
+        - "nombre del médico" → usa la columna `'Nombre Medico'`
+        - "ventas", "precio", etc. → revisa la tabla `'Venta_Historica'`
+        - "productos" → usa `'Maestra_Articulos_DW'`
+        - "detalle del stock producto" → usa `'Stock General Ravepol'[stock]`
+        - "precio total" → usa `'Venta_Historica'[TOTAL_NETO]`
+        - "fecha de venta" → usa la columna `'FECHA'` de la tabla correspondiente
+
+
         ✅ Cuando uses `SELECTCOLUMNS(...)` seguido de `FILTER(...)`, recuerda que:
         - Solo puedes referenciar las columnas renombradas directamente por su alias (por ejemplo: `[Producto]`, no `'Maestra_Productos'[Producto]`).
         - Alternativamente, usa `CALCULATETABLE(...)` para aplicar el filtro antes de seleccionar columnas.
