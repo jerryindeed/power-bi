@@ -16,17 +16,72 @@ client = OpenAI(api_key=OPENAI_API_KEY)
 estructura_modelo = """
 Tablas y columnas disponibles en el modelo semántico:
 
+Calendario: Año, Trimestre, FECHA, MES_CORTO, NOMBRE_DIA_SEMANA, NOMBRE_DIA_SEMANA_CORTO, DIA_SEMANA, AÑO_MES, SEMESTRE, FERIADO, DIA_HABIL, DiaMes, MES_NUM, MES_LARGO, SEMANA_AÑO_NUM, AÑO_MES_NUM, DIA_HABIL_S/N, DIAS_HABILES_MES, DIA_NUM, AñoActual, MesActual, ORDEN_FECHA, DIA_HABIL2, DIA_HABIL_1/0
 Actualizacion: UltimaActualizacion
-Calendario: Año, DateKey, TrimestreNumero, TrimNom, NumeroMes, NombreMes, NombreMesCorto, NumeroSemanaAño, DiaNumeroMes, NombreDiaSemana, NombreDiaSemanaCorto, AñoMes, YM, MesCalendario, DiaSemNum, AñoActual, MesActual, feriado, DiaHabil
-Data Ventas: Año, Folio, NombreMedico, NombreCliente, FechaCreacion, detalle, Cantidad, frascos, DetalleProducto, DosisProducto, UnidadMedida, ValorPreparado, PrecioCosto, año_fecha, mes_fecha, idMedico, idCliente, idProducto, idFormaFarma, DIA_SEMANA, Dosis gramos, Consumo g, PrecioCostoUnitario, ValorEtiqueta, ValorEnvase, ValorMaterialEmpaque, ValorFrasco, ValorCapsulas, ValorCostoTotal, ValorLactosa, ValorTalco
-Maestra_Cliente: NombreCliente, RUT, DIGITO, NOMBRE, PATERNO, MATERNO, DIRECCION, TELEFONO, CELULAR, FAX, CIUDAD, COMUNA, REGION, REGION_CORTA, fechanacimiento, fechaModificacion, RutCliente, REGION2
-Maestra_Medicos: idMedico, RUT, DIGITO, NOMBRE, PATERNO, MATERNO, DIRECCION, TELEFONO, CELULAR, FAX, CIUDAD, COMUNA, REGION, REGION_CORTA, fechaModificacion, observaciones, valorAdicional, mail, idRepresentante, idUsuarioCreacion, idUsuarioModificacion, Nombre Medico, Rut Medico, Especialidad, idEspecialidad
-Maestra_Productos: idProducto, FechaCreacion, detalle, UnidadMedida, fechaModificacion, codigo_ISP, precio_venta, precio_costo, controlado, dosismaxima, codigobase, sinonimo, idUsuarioCreado, precioUnico, equivalencia, unidadMedidaEquivalencia, stock, stockCritico, maximoCapsula, tipoMateriaPrima, Venta_Publico, Precio Venta mg, Precio Costo mg, Activo, diasVencimiento
-Maestra_Producto_Lote: idProducto, idProductoLote, lote, FechaVencimientoLote, Activo
-Maestra_Forma_Farmaceutica: detalle, fechaModificacion, idFormaFarma, precioBase, tipoCalculo, Activo, unidad, diasVencimiento, horasEntrega
-Maestra_Proveedor: RUT, DIGITO, NOMBRE, DIRECCION, TELEFONO, CELULAR, FAX, CIUDAD, razon_social, idCiudad, idComuna, idProveedor
-Agrupacion Cantidades por Medico: idMedico, Folio, Cantidad, frascos, FechaCreacion
-Feriados: Fecha Feriado
+Venta_Historica: FECHA, ID_PRODUCTO, MARCA, ID_SUCURSAL, RUT_CLIENTE, TIPO_DOC, DESCRIP_DOC, NUMERO_PED, DOCUMENTO_REFERENCIA, DIGITADOR, CANTIDAD, TOTAL_NETO, PrimeraCompraB2B, NUMERO_DOC
+Metas_Generales: FECHA, Area, Meta
+Metas_Comisiones: FECHA, Meta, Nombre Vendedor, TipoVendedor, Atributo
+Metas_Concursos: FECHA, Meta, Vendedores, Concurso
+Ventagrama_Metas: FECHA, Meta, Concurso
+Pedidos Detalle RapiQ: FECHA, DIGITADOR, ID PEDIDO, FECHA HORA PEDIDO, ID SUCURSAL ORACLE, ID PRODUCTO, PACK, CANTIDAD PEDIDA, CANTIDAD FORZADA, PRECIO UNITARIO
+Metas_Concursos_Trimestrales: FECHA, Meta, Vendedores, Concurso, Equipo
+Concurso_Negocios_Volumen: FECHA, ID_SUCURSAL, NUMERO_PED, MARCA_MODIFICADA, Monto, VENDEDOR TERRENO, JEFATURA
+Metas_Clientes_Clave: FECHA, Meta, Rut, NOMBRE, Tipo, JEFE
+Guias Controlado: FECHA, CON_CODIGO, TIPR_NOMBRE, CON_FECHA, CON_USUARIO, PED_NUMERO, CON_ESTADO, CON_USUARIO_MODIFICA, CON_FECHA_MODIFICA, COMO_NOMBRE, DES_NOMBRE, DES_DIRECCION, CIU_NOMBRE, COM_NOMBRE, DIR_FANTASIA, DIS_FACTURA, SUC_SECUENCIA, CLI_RUT, NUEVO_DIRECTOR_TECNICO
+Concursos_B2B: FECHA, DESCRIPCION, Meta, CODIGO
+Metas_Promotor_B2B: FECHA, Meta, Vendedores
+PACK FACTURACION: FECHA, ID_PRODUCTO, ID_SUCURSAL, TIPO_DOC, NUMERO_PED, DIGITADOR, CANTIDAD, TOTAL_NETO, NUMERO_DOC, CANTIDAD PEDIDA, CANTIDAD FORZADA, Fecha Pedido, Codigo Pack
+Capacitaciones promotor B2B: FECHA, Rut, VENDEDOR TERRENO, Promotor, N° Sucursal, Nombre Sucursal
+Maestra_Articulos_DW: ID_PRODUCTO, DESCRIPCION, CATEGORIA_INVENTARIO, LABORATORIO, TIPO_UBICACION, MARCA, PRINCIPIO_ACTIVO, FORMA_FARMACEUTICA, BIOEQUIVALENTE, CLASE_COMERCIAL, CONTROLADO, DOSIS, PETITORIO_MINIMO, POSICIONAMIENTO, PESO, ALTO, ANCHO, LARGO, VOLUMEN, NUMERO_REGISTRO, BLOQUEO_VENTA, ESTADO, COMPRADOR, POLITICA_CANJE, TIPO_FORMULACION, INFLAMABLE, SUJETO_CONTROL, PRINCIPIO_ACTIVO2, ENVASE, ACCION_TERAPEUTICA, CLASE_TERAPEUTICA, AREA_NEGOCIO, CATEGORIA_COMERCIAL, FORMA_FARMACEUTICA_2, MARCA_COMERCIAL, FECHA_CREACION, PRODUCTO, CATEGORIA_COMPRA, UBICACION_BODEGA, GENERICO_MARCA, CODIGO_MADRE, SUB_AREA_NEGOCIO, Stock, Fecha Ultima Venta, BLOQUEO_VENTAS, PRESENTACION, PRODUCTO_CORTO, ID_PRODUCTO_WMS, Ean13
+Concursos_Invierno: DESCRIPCION, MARCA, CODIGO, OFERTA INVIERNO, P.FINAL
+Maestra_Clientes_DW: CLASE_COMERCIAL, BLOQUEO_VENTA, FECHA_CREACION, RAZON_SOCIAL, NOMBRE_FANTASIA, GIRO_COMERCIAL, TIPO_CLIENTE, CLIENTE_ESPECIAL, VENCIMIENTO<ANIO, CONDICION_PAGO, LIMITE_CREDITO, NOMBRE_CONTACTO, TELEFONO_CONTACTO, EMAIL_CONTACTO, REPRESENTANTE_LEGAL, RUT_REP_LEGAL, DIRECTOR_TECNICO, GIRADOR, RUT_GIRADOR, ID_SUCURSAL, NOMBRE_SUCURSAL, RUTA, DT_VETERINARIA, LISTA_PRECIOS, COMPRA_CENTRALIZADA, DIRECCION, CIUDAD, COMUNA, PROVINCIA, REGION, PAIS, FACTURA, ENVIO, VENDEDOR_TERRENO, VENDEDOR_TLMK, VENDEDOR_ANC, VENDEDOR_NATURAL, COMENTARIO1, COMENTARIO2, FECHA_TERMINO, RUT_DT, RUT_CLIENTE, STATUS, FECHA_ULTIMA_VENTA, CLIENTES ACTIVOS NO VENTA +3M, AGRUPACION_ULTIMA_VENTA, COMUNA_2, PROVINCIA_2, REGION_2, ZONA_GEOGRAFICA, Clase Comercial2, SUCURSALES ACTIVAS, FECHA B2B, ORDEN ZONAS_GEOGRAFICAS, Kam_Vet, Latitud, Longitud, Status Compra, PromotorB2B, FECHA_CREACION_SUCURSAL, Meta General, Meta Veterinaria, Meta Perfumeria, Jefe_Ventas, ID_SUCURSAL_WMS, ZONA GEOGRAFICA, CODIGO_REGION, Cuadrante, Clasificación, CAT COMPRA NN
+Stock General Ravepol: Stock, PRO_PRODUCTO
+Comunas_Geograficas: COMUNA, PROVINCIA, Latitud, Longitud, Orden, Orden2, CUT (Código Único Territorial), Densidad(hab./km2), IDH 2005, IDH 2005_1, Población2017, Región, Superficie(km2), Zonas
+Ruta Promotores B2B: COMUNA, Promotor
+Sucursales Objetivos FreshSales: COMUNA, ID, VENDEDOR TERRENO, CLASE COMERCIAL, Vendedor, Codigo de Sucursal, Nombre de la Sucursal, Rut Cliente/Empresa, B2B, Correo electrónico del propietario
+Ruta Promotores B2B( comunas base): COMUNA, Promotor
+Clientes_Tramo: RUT_CLIENTE
+RUTs B2B MesAnterior: RUT_CLIENTE, Compró B2B Este Mes
+Destinatario_Direccion: Latitud, Longitud, DIR_SUCURSAL
+Vendedor_Digitador: DIGITADOR, Equipo, Canal, Nombre Digitador
+AreaNegocio: Area, Orden
+ZonaVendedores: Vendedores, Zona, Orden, Equipo, Zona1, Orden2, Ejecutivo Cobranzas, Rut, ClaveUsuario2, Correo, NombreDigitacion, Jefe Ventas, Canal
+Vend_Terreno: Vendedores, Zona, Orden, Equipo, Zona1, Orden2, Ejecutivo Cobranzas, Rut, ClaveUsuario2, Correo, NombreDigitacion, Jefe Ventas, Canal
+Vend_ANC: Vendedores, Zona, Orden, Equipo, Zona1, Orden2, Ejecutivo Cobranzas, Rut, ClaveUsuario2, Correo, NombreDigitacion, Jefe Ventas, Canal
+Vend_ANC-TLMK: Vendedores, Zona, Orden, Equipo, Zona1, Orden2, Ejecutivo Cobranzas, Rut, ClaveUsuario2, Correo, NombreDigitacion, Jefe Ventas, Canal
+Vend_Asistente: Vendedores, Zona, Orden, Equipo, Zona1, Orden2, Ejecutivo Cobranzas, Rut, ClaveUsuario2, Correo, NombreDigitacion, Jefe Ventas, Canal
+Kam_Farma: Vendedores, Zona, Orden, Equipo, Zona1, Orden2, Ejecutivo Cobranzas, Rut, ClaveUsuario2, Correo, NombreDigitacion, Jefe Ventas, Canal
+Vend_Tlmk: Vendedores, Zona, Orden, Equipo, Zona1, Orden2, Ejecutivo Cobranzas, Rut, ClaveUsuario2, Correo, NombreDigitacion, Jefe Ventas, Canal
+Vend_PromotorB2B: Vendedores, Zona, Orden, Equipo, Zona1, Orden2, Ejecutivo Cobranzas, Rut, ClaveUsuario2, Correo, NombreDigitacion, Jefe Ventas, Canal
+Vend_Kam-Vet: Vendedores, Zona, Orden, Equipo, Zona1, Orden2, Ejecutivo Cobranzas, Rut, ClaveUsuario2, Correo, NombreDigitacion, Jefe Ventas, Canal
+Metas_Concursos_Adicionales: Concurso, Equipo, CODIGO, Descrpcion, LAB, VIGENCIA, Multiplos
+ConcursosClientes: Concurso, CODIGO, VIGENCIA
+Ventagrama: Orden, Ventagrama
+Clientes_TramoSInNC: Rut, NOMBRE, Columna1, Columna2, Columna3
+ClientesVet_Metas: Rut, 1, 2, 3
+Clientes ANCCondicionesEspeciales: Rut, Condiciones
+ANC Clientes_Incentivo: Rut, Tipo Incentivo
+ClientesVet: Rut
+ClientesVet_Descuento: Rut, 1, 2, 3
+Kam_Vet: Rut, Vendedor
+Transacciones promotor B2B: Rut, VENDEDOR TERRENO, Promotor, N° Sucursal, Nombre Sucursal, Fecha transacción, Programa
+Tipo De Venta: ID, TipoVenta
+Visitas efectivas Freshsales: ID, VENDEDOR TERRENO, Vendedor, Codigo de Sucursal, Nombre de la Sucursal, Correo electrónico del propietario, País, Sector/Industria, Tipo de Cliente, Actividad de ventas Checkedout At, Actividad de ventas Checkedout At - Copia
+Contraseña_KamFarma: Contraseña_KamFarma
+Contraseña_ANC-TLMK: Contraseña_ANC-TLMK
+Contraseña_ASISTENTE: Contraseña_ASISTENTE
+Contraseña_Terreno: Contraseña_Terreno
+Contraseña_TLMK: Contraseña_TLMK
+ANC Incentivo1: CODIGO, DESCRIPCIÓN, Incentivo
+ANC Incentivo2: CODIGO, DESCRIPCIÓN, Incentivo
+Tipo Clientes B2B: CLASE COMERCIAL, Tipo Cliente
+Guia Despacho: PRO_PRODUCTO, GUIA_FOLIO, GUIA_FECHA, GUIA_USUARIO, GUIA_TIPO, GUIA_TRASLADO, GUIA_MOTIVO, GUIA_GLOSA_1, GUIA_GLOSA_2, GUIA_GLOSA_3, GUIA_EQUIPO, GUIA_NETO, BOD_CODIGO, GUIA_BIEN, GUIA_ESTADO, GUIA_RUT, GUIA_NOMBRE, GUIA_DIRECCION, GUIA_COMUNA, GUIA_CIUDAD, GUIA_REGION, GUIA_TELEFONO, AJU_CODIGO, GUIA_MOTIVO_NOMBRE, GUIA_TRASLADO_NOMBRE, NOMBRE_DESPACHO, GUIA_BIEN_NOMBRE, GUIADET_FOLIO, PRO_CODIGO, PRO_NOMBRE, GUIADET_CANTIDAD, GUIADET_PRECIO, GUIADET_LOTE, GUIADET_VENCIMIENTO, EST_CODIGO, UBI_CODIGO, BOD_NOMBRE, EST_NOMBRE, GUIA_TIPO_SII, GUIA_COMERCIAL, CIU_ERP, CIU_IATA, GUIA_TRASLADO_SII, FECHA-HORA
+Contactos Fuerza de Venta: Vendedor, Codigo de Sucursal, Estado de la Sucursal, Nombre de la Sucursal, Last contacted time
+Metas_Clientes_Veterinaria: NUMERO_SUC, Meta_Cliente
+Metas_Clientes_Perfumeria: NUMERO_SUC, Meta_Cliente
+Metas_Clientes_General: NUMERO_SUC, Meta_Cliente
+Contraseña_KAM-VET: Contraseña_KAM-VET
+
 """
 
 # --- FUNCIONES ---
@@ -43,24 +98,17 @@ def pregunta_a_dax(pregunta):
 
         📌 Consideraciones clave para generar la consulta DAX:
         - Usa funciones como `SUM`, `MAX`, `COUNTROWS`, `CALCULATE`, `FILTER`, `SUMMARIZECOLUMNS`, etc., según la intención de la pregunta.
-        - Si necesitas filtrar por fechas relativas (como "mes pasado", "últimos 7 días"), usa funciones como `EDATE`, `TODAY()`, `DATEADD`, y asegúrate de aplicar el filtro correctamente dentro de `CALCULATE`, sin usar `VAR` si no estás generando una medida.
-        - Si el usuario se refiere a:
-        - "médicos" → usa la tabla `'Maestra_Medicos'`
-        - "nombre del médico" → usa la columna `'Nombre Medico'`
-        - "ventas", "frascos", "precio", etc. → revisa la tabla `'Data Ventas'`
-        - "productos" → usa `'Maestra_Productos'`
-        - "detalle del producto" → usa `'Maestra_Productos'[detalle]`
-        - "precio costo" → usa `'Data Ventas'[PrecioCosto]`
-        - "fecha de creación" → usa la columna `'fechaCreacion'` de la tabla correspondiente
+        - Si necesitas filtrar por fechas relativas (como "mes pasado", "últimos 7 días"), usa funciones como `EDATE`, `TODAY()`, `DATEADD`, y asegúrate de aplicar correctamente los filtros dentro de `CALCULATE`.
+        - Si el usuario se refiere a conceptos relacionados a ventas, precios, cantidades, stock, clientes, vendedores, etc., utiliza las tablas y columnas adecuadas que coincidan exactamente por nombre en la estructura proporcionada.
 
         ✅ Cuando uses `SELECTCOLUMNS(...)` seguido de `FILTER(...)`, recuerda que:
-        - Solo puedes referenciar las columnas *renombradas* directamente por su alias (por ejemplo: `[detalle]`, no `'Maestra_Productos'[detalle]`).
+        - Solo puedes referenciar las columnas renombradas directamente por su alias (por ejemplo: `[Producto]`, no `'Maestra_Productos'[Producto]`).
         - Alternativamente, usa `CALCULATETABLE(...)` para aplicar el filtro antes de seleccionar columnas.
 
-        ✅ Cuando el usuario solicite un **único valor agregado** (por ejemplo, el total del mes anterior o la suma general):
+        ✅ Cuando el usuario solicite un **único valor agregado** (por ejemplo, el total de ventas del mes pasado o la suma general):
         - Utiliza `EVALUATE ROW(...)` o `EVALUATE { ... }` para devolver solo una fila con una etiqueta descriptiva.
         - Evita `SUMMARIZECOLUMNS` en estos casos para no devolver múltiples filas.
-        - Asegúrate de que la consulta sea ejecutable directamente.
+        - Asegúrate de que la consulta sea ejecutable directamente en Power BI.
 
         🛑 No uses `VAR` ni `RETURN`, ya que la consulta debe ser directamente ejecutable como una sentencia `EVALUATE`.
 
