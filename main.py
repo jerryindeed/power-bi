@@ -96,38 +96,36 @@ def pregunta_a_dax(pregunta):
 
         Tu tarea es interpretar cualquier pregunta hecha en lenguaje natural por un usuario y generar una consulta DAX correcta, optimizada y ejecutable. Siempre usa los nombres exactos de tablas y columnas proporcionados.
 
-        📌 📌 Consideraciones clave para generar la consulta DAX:
+        📌 Consideraciones clave para generar la consulta DAX:
         - Usa funciones como `SUM`, `MAX`, `COUNTROWS`, `CALCULATE`, `FILTER`, `SUMMARIZECOLUMNS`, etc., según la intención de la pregunta.
-        - Si necesitas filtrar por fechas relativas (como "mes pasado", "últimos 7 días"), **usa siempre columnas de tipo `Date` (como `'Calendario'[FECHA]` o `'Calendario'[ORDEN_FECHA]`) para funciones como `EDATE`, `TODAY()`, `DATEADD`**.  
+        - Si necesitas filtrar por fechas relativas (como "mes pasado", "últimos 7 días"), **usa siempre columnas de tipo `Date` (como `'Calendario'[FECHA]` o `'Calendario'[ORDEN_FECHA]`) para funciones como `EDATE`, `TODAY()`, `DATEADD`, `STARTOFMONTH` y `ENDOFMONTH`**.  
         **Nunca compares columnas tipo texto o número (como `'Calendario'[AÑO_MES_NUM]`) directamente con resultados de esas funciones.**  
-        Si debes usar `AÑO_MES_NUM`, calcula el valor numérico correspondiente al periodo deseado con una operación aritmética, como `MAX('Calendario'[AÑO_MES_NUM]) - 1`.
 
         Ejemplo incorrecto:
 
-        FILTER(ALL('Calendario'),'Calendario'[AÑO_MES_NUM] = EDATE(MAX('Calendario'[AÑO_MES_NUM]),-1))
+        `FILTER(ALL('Calendario'),'Calendario'[AÑO_MES_NUM] = EDATE(MAX('Calendario'[AÑO_MES_NUM]),-1))`
 
         Ejemplo correcto:
 
-        FILTER(ALL('Calendario'), 'Calendario'[FECHA] >= EDATE(TODAY(),-1) && 'Calendario'[FECHA] <= TODAY())
+        `FILTER(ALL('Calendario'), 'Calendario'[FECHA] >= EDATE(TODAY(),-1) && 'Calendario'[FECHA] <= TODAY())`
 
         o bien:
-
         VAR MesAnterior = MAX('Calendario'[AÑO_MES_NUM]) - 1
         FILTER(ALL('Calendario'), 'Calendario'[AÑO_MES_NUM] = MesAnterior)
 
+        - **Cuando uses `STARTOFMONTH()` o `ENDOFMONTH()`, siempre debes pasarle una columna de tipo `Date`, no `TODAY()` ni otra expresión**. Para obtener fechas relativas al día actual usa `EDATE(TODAY(), -1)` o `EOMONTH(TODAY(), -1) + 1` según corresponda.
 
         - Si el usuario se refiere a:
         - "vendedor" → usa las tablas `'Vend_PromotorB2B', 'Vend_Terreno','Vend_Tlmk'`
         - "nombre del médico" → usa la columna `'Nombre Medico'`
         - "ventas", "precio", etc. → revisa la tabla `'Venta_Historica'`
         - "productos" → usa `'Maestra_Articulos_DW'`
-        - "detalle del stock producto" → usa `'Stock General Ravepol'[stock]`
+        - "detalle del stock producto" → usa `'Stock General Ravepol'[Stock]`
         - "precio total" → usa `'Venta_Historica'[TOTAL_NETO]`
         - "fecha de venta" → usa la columna `'FECHA'` de la tabla correspondiente
 
-
         ✅ Cuando uses `SELECTCOLUMNS(...)` seguido de `FILTER(...)`, recuerda que:
-        - Solo puedes referenciar las columnas renombradas directamente por su alias (por ejemplo: `[Producto]`, no `'Maestra_Productos'[Producto]`).
+        - Solo puedes referenciar las columnas renombradas directamente por su alias (por ejemplo: `[Producto]`, no `'Maestra_Articulos_DW'[Producto]`).
         - Alternativamente, usa `CALCULATETABLE(...)` para aplicar el filtro antes de seleccionar columnas.
 
         ✅ Cuando el usuario solicite un **único valor agregado** (por ejemplo, el total de ventas del mes pasado o la suma general):
@@ -141,6 +139,7 @@ def pregunta_a_dax(pregunta):
         \"{pregunta}\"
 
         Devuelve únicamente la consulta DAX completa y válida, sin comentarios ni explicación.
+
         """
 
 
