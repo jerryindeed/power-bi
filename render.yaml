@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: power-bi
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port 10000
+    envVars:
+      - key: TELEGRAM_TOKEN
+        value: 7616824617:AAHjXFBO-AInU4f-QOfp_dgudw1aJ6VfO50
+      - key: OPENAI_API_KEY
+        value: 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
+      - key: POWER_AUTOMATE_URL
+        value: https://prod-40.westus.logic.azure.com:443/workflows/bf72ea2d7282488da107a2115535502b/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=2aVJlesHOqqwyeVv7jPfGyTAUYx2U34dvXMh4dXKZUM
+    plan: free
