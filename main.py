@@ -105,25 +105,25 @@ def formatear_respuesta(resultado):
     if resultado is None:
         return "⚠️ No se encontraron resultados para tu consulta."
 
-    # Si es una lista y está vacía
+    # Si es lista
     if isinstance(resultado, list):
         if len(resultado) == 0:
             return "⚠️ No se encontraron resultados para tu consulta."
         else:
-            # Si es una lista con contenido, lo convertimos a string
-            mensajes = []
-            for item in resultado:
-                mensajes.append(str(item))
+            mensajes = [str(item) for item in resultado]
             return "\n".join(mensajes)
 
-    # Si es un diccionario
+    # Si es diccionario
     if isinstance(resultado, dict):
-        mensajes = []
-        for clave, valor in resultado.items():
-            mensajes.append(f"🔹 {clave}: {valor}")
+        # Si tiene solo una clave, devuelve su valor directamente
+        if len(resultado) == 1:
+            return list(resultado.values())[0]
+
+        # Si tiene varias claves, arma el listado
+        mensajes = [f"🔹 {clave}: {valor}" for clave, valor in resultado.items()]
         return "\n".join(mensajes)
 
-    # Si es un string vacío
+    # Si es string
     if isinstance(resultado, str):
         if resultado.strip() == "":
             return "⚠️ No se encontraron resultados para tu consulta."
@@ -135,17 +135,19 @@ def formatear_respuesta(resultado):
         if resultado.strip().startswith("{") and resultado.strip().endswith("}"):
             try:
                 data = eval(resultado)
-                mensajes = []
-                for clave, valor in data.items():
-                    mensajes.append(f"🔹 {clave}: {valor}")
-                return "\n".join(mensajes)
+                if isinstance(data, dict):
+                    if len(data) == 1:
+                        return list(data.values())[0]
+                    mensajes = [f"🔹 {clave}: {valor}" for clave, valor in data.items()]
+                    return "\n".join(mensajes)
             except Exception:
                 pass
 
         return f"📈 Resultado obtenido:\n{resultado}"
 
-    # Si no es nada de eso, convertirlo a string y devolverlo
+    # Si no es ninguno de los anteriores, lo convierte a string
     return str(resultado)
+
 
 
 
