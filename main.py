@@ -101,6 +101,28 @@ def enviar_mensaje_telegram(chat_id, mensaje):
     payload = {"chat_id": chat_id, "text": mensaje}
     requests.post(url, json=payload)
 
+def formatear_respuesta(resultado):
+    if not resultado or resultado.strip() == "":
+        return "⚠️ No se encontraron resultados para tu consulta."
+
+    if "error" in resultado.lower() or "exception" in resultado.lower():
+        return "❌ Hubo un problema al procesar la consulta. Por favor, revisa tu pregunta."
+
+    # Si es un único valor en formato tipo { "Total Ventas": 10000 }
+    if resultado.strip().startswith("{") and resultado.strip().endswith("}"):
+        try:
+            data = eval(resultado)  # usar json.loads() si Power Automate devuelve JSON real
+            mensajes = []
+            for clave, valor in data.items():
+                mensajes.append(f"🔹 {clave}: {valor}")
+            return "\n".join(mensajes)
+        except Exception:
+            pass  # Si no es un diccionario, dejamos pasar al mensaje normal
+
+    # Si todo sale bien, devuelve el resultado sin modificar
+    return f"📈 Resultado obtenido:\n{resultado}"
+
+
 # --- FASTAPI APP ---
 
 app = FastAPI()
@@ -116,9 +138,14 @@ async def telegram_webhook(request: Request):
         return JSONResponse(content={"ok": True})
 
     dax = pregunta_a_dax(texto)
-    resultado = enviar_a_power_automate(dax)
+    resultado_bruto = enviar_a_power_automate(dax)
+    resultado_formateado = formatear_respuesta(resultado_bruto)
 
-    respuesta = f"📊 Consulta:\n{texto}\n\n✅ Resultado:\n{resultado}"
+    respuesta = f"📊 Tu consulta fue:\n{texto}\n\n{resultado_formateado}"
     enviar_mensaje_telegram(chat_id, respuesta)
 
     return JSONResponse(content={"ok": True})
+
+
+
+ 
